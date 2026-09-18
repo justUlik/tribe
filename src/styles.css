@@ -138,8 +138,8 @@ a {
 .page-content {
   position: relative;
   z-index: 1;
-  width: 1920px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1920px;
   margin: 0 auto;
   transition: filter 0.2s ease;
 }
@@ -170,21 +170,25 @@ a {
   display: flex;
   flex-direction: column;
   gap: 96px;
-  padding: 64px 80px 32px;
+  padding: 64px clamp(24px, 4.2vw, 80px) 32px;
 }
 
 .hero {
   display: flex;
-  gap: 40px;
+  gap: clamp(16px, 2.1vw, 40px);
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  width: 100%;
 }
 
 .shield {
   position: relative;
-  width: 562px;
-  height: 634px;
-  flex: 0 0 auto;
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  max-width: 562px;
+  height: auto;
+  aspect-ratio: 562 / 634;
 }
 
 .shield img.shield-shape {
@@ -211,31 +215,38 @@ a {
   flex-direction: column;
   gap: 48px;
   align-items: center;
+  width: 100%;
 }
 
 .product-row {
   display: flex;
-  gap: 40px;
+  gap: clamp(16px, 2.1vw, 40px);
   width: 100%;
+  justify-content: center;
 }
 
 .product-card {
-  width: 560px;
-  flex: 0 0 auto;
+  width: auto;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 560px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
 .product-card.is-team {
-  width: 670px;
+  width: min(670px, 100%);
+  max-width: 670px;
+  flex: 0 1 670px;
   align-items: center;
 }
 
 .product-photo {
   position: relative;
   width: 100%;
-  height: 434px;
+  height: auto;
+  aspect-ratio: 560 / 434;
   padding: 8px;
   border-radius: 4px;
   overflow: hidden;
@@ -381,8 +392,7 @@ a {
   opacity: 0.7;
 }
 
-.modal-form .btn-card,
-.sheet .btn-card {
+.product-card .btn-card {
   width: 100%;
 }
 
@@ -481,14 +491,19 @@ a {
 
 .side-cards {
   display: flex;
-  gap: 48px;
+  gap: clamp(16px, 2.5vw, 48px);
   width: 100%;
   align-items: center;
+  justify-content: center;
 }
 
 .side-card {
-  width: 666px;
-  height: 725px;
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  max-width: 666px;
+  height: auto;
+  aspect-ratio: 666 / 725;
   border-radius: 8px;
   overflow: hidden;
   padding: 0;
@@ -1280,23 +1295,9 @@ a {
 }
 
 @media (max-width: 1600px) {
-  .page-content {
-    width: 100%;
-  }
-
   .main {
-    padding: 48px 40px 32px;
+    padding: 48px clamp(16px, 2.5vw, 40px) 32px;
     gap: 72px;
-  }
-
-  .hero {
-    justify-content: center;
-  }
-
-  .shield {
-    width: min(32vw, 562px);
-    height: auto;
-    aspect-ratio: 562 / 634;
   }
 
   .product-row,
@@ -1305,15 +1306,8 @@ a {
     justify-content: center;
   }
 
-  .product-card,
-  .btn-card {
-    width: min(560px, 100%);
-  }
-
-  .side-card {
-    width: min(666px, calc(50% - 24px));
-    height: auto;
-    aspect-ratio: 666 / 725;
+  .product-card:not(.is-team) {
+    flex: 1 1 280px;
   }
 }
 
@@ -1367,6 +1361,7 @@ a {
     width: 328px;
     max-width: 100%;
     height: 386px;
+    flex: 0 0 auto;
   }
 
   .product-card.is-team,
@@ -1376,12 +1371,14 @@ a {
   }
 
   .product-photo {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     height: auto;
     min-height: 0;
+    aspect-ratio: auto;
   }
 
   .product-body {
+    flex: 0 0 auto;
     padding-top: 16px;
     gap: 16px;
   }
@@ -1409,11 +1406,9 @@ a {
   }
 
   .product-card:not(.is-team) .product-price {
+    margin: 0;
     white-space: nowrap;
     justify-self: end;
-  }
-
-  .product-card:not(.is-team) .product-price {
     color: var(--ink);
   }
 
