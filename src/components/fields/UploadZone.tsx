@@ -21,12 +21,12 @@ export function UploadZone({ file, onChange, error, failed, fullWidth }: Props) 
 
   if (file) {
     return (
-      <div className={`file-status${failed ? ' is-error' : ''}`}>
+      <div className={`file-status${failed || error ? ' is-error' : ''}`}>
         <div className="file-status-copy">
           <p className="file-name">{file.name}</p>
-          <p className={`file-state${failed ? ' is-bad' : ''}`}>
+          <p className={`file-state${failed || error ? ' is-bad' : ''}`}>
             <span className="file-dot" />
-            {failed ? 'Ошибка загрузки' : 'Загружен'}
+            {failed ? 'Ошибка загрузки' : error ? 'Прикрепите скрин об оплате' : 'Загружен'}
           </p>
         </div>
         <button type="button" className="file-trash" aria-label="Удалить файл" onClick={() => onChange(null)}>
@@ -37,7 +37,7 @@ export function UploadZone({ file, onChange, error, failed, fullWidth }: Props) 
   }
 
   return (
-    <div className="upload-block">
+    <div className={`upload-block${error ? ' has-error' : ''}`}>
       <p className="upload-label">{nbspText('Загрузите скрин об оплате')}</p>
       <label
         className={`btn-card is-outline${fullWidth ? ' is-full' : ''}${error ? ' has-error' : ''}${drag ? ' is-drag' : ''}`}
@@ -63,6 +63,7 @@ export function UploadZone({ file, onChange, error, failed, fullWidth }: Props) 
           }}
         />
       </label>
+      {error ? <p className="upload-error">{nbspText('Прикрепите скрин об оплате')}</p> : null}
     </div>
   );
 }

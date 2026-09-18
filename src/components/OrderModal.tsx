@@ -120,7 +120,8 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
 
   const submit = async () => {
     setSubmitFailed(false);
-    if (!validate() || !file || !color) return;
+    const valid = validate();
+    if (!valid || !file || fileFailed || !color) return;
     setSending(true);
     try {
       const body = new FormData();
@@ -360,7 +361,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
           <>
             {nbspText('Не забывайте выходить из сбора после перевода денег, иначе другие коллеги')}
             <br />
-            не смогут присоединиться.
+            {nbspText('не смогут присоединиться.')}
             <br />
             <br />
             {nbspText('Мерч вы получите до конца 2026 года.')}
@@ -369,7 +370,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
           <>
             {nbspText('Не забывайте выходить из сбора после перевода денег, ')}
             <br />
-            иначе другие коллеги не смогут присоединиться.
+            {nbspText('иначе другие коллеги не смогут присоединиться.')}
             <br />
             <br />
             {nbspText('Мерч вы получите до конца 2026 года.')}

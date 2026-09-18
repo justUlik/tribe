@@ -27,12 +27,13 @@ export function InfoSection() {
           <p className="info-num">3</p>
           <p className="info-copy">
             {nbspText('Мерч вы получите до конца 2026 года (по точным срокам с вами свяжутся дополнительно).')}
-            <br />
-            {nbspText('По всем вопросам обращайтесь к ')}
-            <a href="mailto:evborzikhina@sberbank.ru">Борзихиной Екатерине.</a>
           </p>
         </li>
       </ol>
+      <p className="info-contact">
+        {nbspText('По всем вопросам обращайтесь к ')}
+        <a href="mailto:evborzikhina@sberbank.ru">Борзихиной Екатерине</a>.
+      </p>
     </section>
   );
 }
