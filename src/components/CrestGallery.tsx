@@ -9,7 +9,7 @@ export function CrestGallery({ onOpen }: Props) {
     <div className="crest-gallery">
       {CREST_GALLERY.map((item, index) => (
         <button key={item.src} type="button" className="crest-thumb" onClick={() => onOpen(index)}>
-          <img src={item.src} alt={item.alt} width={333} height={262} />
+          <img src={item.src} alt={item.alt} width={1920} height={1510} />
         </button>
       ))}
     </div>

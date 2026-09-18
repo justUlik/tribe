@@ -1,3 +1,35 @@
+@font-face {
+  font-family: 'Luminari';
+  src: url('/fonts/Luminari.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SB Sans Display';
+  src: url('/fonts/SBSansDisplay-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SB Sans Display';
+  src: url('/fonts/SBSansDisplay-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SB Sans Display';
+  src: url('/fonts/SBSansDisplay-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #d6d6cf;
   --black: #000;
@@ -16,8 +48,8 @@
   --minus: #c5c5c5;
   --close: #2b2d33;
   --focus-glow: 0 0 6px rgba(232, 124, 43, 0.15);
-  --font-display: 'Luminari', 'Playfair Display', 'Times New Roman', serif;
-  --font-sans: 'SB Sans Display', 'Golos Text', system-ui, sans-serif;
+  --font-display: 'Luminari', 'Times New Roman', serif;
+  --font-sans: 'SB Sans Display', system-ui, sans-serif;
   --font-mono: 'DM Mono', ui-monospace, monospace;
 }
 
@@ -420,7 +452,7 @@ a {
 
 .crest-thumb {
   flex: 1 0 0;
-  aspect-ratio: 3840 / 3020;
+  aspect-ratio: 1920 / 1510;
   border-radius: 10px;
   overflow: hidden;
   padding: 0;
@@ -523,13 +555,39 @@ a {
   text-align: center;
 }
 
-.info-text {
+.info-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
   margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+}
+
+.info-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.info-num {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 80px;
+  line-height: 80px;
+  font-weight: 400;
+}
+
+.info-copy {
+  margin: 0;
+  font-family: var(--font-sans);
   font-size: 28px;
   line-height: normal;
 }
 
-.info-text a {
+.info-copy a {
   color: inherit;
   text-underline-position: from-font;
 }
@@ -760,6 +818,7 @@ a {
 .field-box {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 8px;
   width: 100%;
   min-height: 44px;
@@ -767,6 +826,7 @@ a {
   border: 1px solid #000;
   border-radius: 4px;
   background: #fff;
+  text-align: left;
   transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
@@ -794,6 +854,9 @@ a {
   color: var(--black);
   font-family: var(--font-sans);
   font-size: 16px;
+  padding: 0;
+  margin: 0;
+  text-align: left;
 }
 
 .qty-field .field-box {
@@ -831,6 +894,8 @@ a {
 
 .field-box input::placeholder {
   color: var(--muted);
+  text-align: left;
+  opacity: 1;
 }
 
 .field-box input:focus::placeholder {
@@ -1003,7 +1068,7 @@ a {
   background: #fff;
   border-radius: 4px 4px 0 0;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.47);
-  padding: 48px 16px 24px;
+  padding: 16px 16px 24px;
   animation: sheet-in 0.22s ease-out;
 }
 
@@ -1161,6 +1226,7 @@ a {
 .sheet .modal-title {
   font-size: 24px;
   line-height: normal;
+  padding-right: 40px;
 }
 
 .sheet .form-grid {
@@ -1239,7 +1305,7 @@ a {
   }
 
   .main {
-    padding: 24px 16px 64px;
+    padding: 48px 16px 96px;
     gap: 56px;
   }
 
@@ -1381,9 +1447,29 @@ a {
     gap: 12px;
   }
 
-  .crest-lead,
-  .info-text {
+  .crest-lead {
     font-size: 14px;
+  }
+
+  .info {
+    gap: 12px;
+  }
+
+  .info-steps {
+    gap: 32px;
+  }
+
+  .info-step {
+    gap: 8px;
+  }
+
+  .info-num {
+    font-size: 32px;
+    line-height: 32px;
+  }
+
+  .info-copy {
+    font-size: 16px;
   }
 
   .crest-gallery {
