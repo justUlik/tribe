@@ -1,4 +1,5 @@
 import { COLORS } from '../data';
+import { nbspText } from '../nbsp';
 import type { ColorId, Product } from '../types';
 import { ButtonCard } from './ButtonCard';
 
@@ -31,7 +32,7 @@ export function ProductCard({
       <div className="product-body">
         <div className="product-copy">
           <div className="product-headline">
-            <h3 className="product-title">{product.title}</h3>
+            <h3 className="product-title">{nbspText(product.title)}</h3>
             <p className="product-price">{product.price}</p>
           </div>
           <div className="product-meta">
@@ -53,7 +54,7 @@ export function ProductCard({
             </div>
           </div>
         </div>
-        <ButtonCard onClick={onOrder}>Оформить предзаказ</ButtonCard>
+        <ButtonCard onClick={onOrder}>{nbspText('Оформить предзаказ')}</ButtonCard>
       </div>
     </article>
   );

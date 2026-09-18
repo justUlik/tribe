@@ -8,6 +8,7 @@ import { OrderModal } from './components/OrderModal';
 import { ProductCard } from './components/ProductCard';
 import { SidePickCard } from './components/SidePickCard';
 import { CREST_GALLERY, PRODUCTS, TEAM_SIDES } from './data';
+import { nbspText } from './nbsp';
 import type { ColorId, LightboxItem, OrderPrefill, PrintSide, ProductId } from './types';
 
 const defaultColors: Record<ProductId, ColorId> = {
@@ -60,7 +61,7 @@ export default function App() {
         <main className="main">
           <Hero />
           <section className="products">
-            <h1 className="section-title">Базовый мерч</h1>
+            <h1 className="section-title">{nbspText('Базовый мерч')}</h1>
             <div className="product-row">
               {baseProducts.map((product) => (
                 <ProductCard
@@ -76,11 +77,11 @@ export default function App() {
           </section>
           <section className="crest-block">
             <div className="crest-intro">
-              <h2 className="section-title">Мерч вашего продукта</h2>
+              <h2 className="section-title">{nbspText('Мерч вашего продукта')}</h2>
               <p className="crest-lead">
-                Печать будет только на одной стороне футболки — спереди или сзади,
-                <br />
-                посмотреть, как выглядит ваш герб и все остальные можно ниже
+                {nbspText(
+                  'Печать будет только на одной стороне футболки — спереди или сзади, посмотреть, как выглядит ваш герб и все остальные можно ниже',
+                )}
               </p>
             </div>
             <CrestGallery onOpen={(index) => setLightbox({ items: CREST_GALLERY, index })} />

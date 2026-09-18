@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { nbspText } from '../../nbsp';
 
 type Props = {
   file: File | null;
@@ -37,7 +38,7 @@ export function UploadZone({ file, onChange, error, failed, fullWidth }: Props) 
 
   return (
     <div className="upload-block">
-      <p className="upload-label">Загрузите скрин об оплате</p>
+      <p className="upload-label">{nbspText('Загрузите скрин об оплате')}</p>
       <label
         className={`btn-card is-outline${fullWidth ? ' is-full' : ''}${error ? ' has-error' : ''}${drag ? ' is-drag' : ''}`}
         onDragOver={(event) => {

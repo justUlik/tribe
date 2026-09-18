@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PAYMENT_LINK } from '../config';
 import { ADDRESSES, COLORS, PRINT_SIDES, PRODUCTS, TEAMS } from '../data';
+import { nbspText } from '../nbsp';
 import type { ColorId, OrderPrefill, PrintSide, ProductId } from '../types';
 import { ButtonCard } from './ButtonCard';
 import { PhoneField } from './fields/PhoneField';
@@ -81,7 +82,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
     [product],
   );
   const teamOptions = useMemo(
-    () => TEAMS.map((name) => ({ id: name, label: name })),
+    () => TEAMS.map((name) => ({ id: name, label: nbspText(name) })),
     [],
   );
 
@@ -154,7 +155,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
       placeholder="Мерч"
       emptyLabel="Выберите мерч"
       error={errors.product}
-      options={PRODUCTS.map((item) => ({ id: item.id, label: item.formTitle }))}
+      options={PRODUCTS.map((item) => ({ id: item.id, label: nbspText(item.formTitle) }))}
       onChange={(id) => {
         setProductId(id);
         const next = PRODUCTS.find((item) => item.id === id)!;
@@ -183,8 +184,8 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
   const printSideField = product.hasCrest ? (
     <SelectField
       value={printSide}
-      placeholder="Сторона печати"
-      emptyLabel="Выберите сторону печати"
+      placeholder={nbspText('Сторона печати')}
+      emptyLabel={nbspText('Выберите сторону печати')}
       error={errors.printSide}
       options={PRINT_SIDES}
       onChange={setPrintSide}
@@ -219,10 +220,10 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
           <QtyStepper value={quantity} onChange={setQuantity} />
           <SelectField
             value={address}
-            placeholder="Адрес доставки"
-            emptyLabel="Введите адрес доставки"
+            placeholder={nbspText('Адрес доставки')}
+            emptyLabel={nbspText('Введите адрес доставки')}
             error={errors.address}
-            options={ADDRESSES.map((item) => ({ id: item, label: item }))}
+            options={ADDRESSES.map((item) => ({ id: item, label: nbspText(item) }))}
             onChange={setAddress}
           />
         </>
@@ -263,10 +264,10 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
           </div>
           <SelectField
             value={address}
-            placeholder="Адрес доставки"
-            emptyLabel="Введите адрес доставки"
+            placeholder={nbspText('Адрес доставки')}
+            emptyLabel={nbspText('Введите адрес доставки')}
             error={errors.address}
-            options={ADDRESSES.map((item) => ({ id: item, label: item }))}
+            options={ADDRESSES.map((item) => ({ id: item, label: nbspText(item) }))}
             onChange={setAddress}
           />
         </>
@@ -294,18 +295,18 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
   const qr = (
     <aside className="modal-qr">
       <div className="qr-group">
-        <img src="/assets/ui/qr-code.png" alt="QR-код на сбор" width={232} height={232} />
+        <img src="/assets/ui/qr-code.png" alt={nbspText('QR-код на сбор')} width={232} height={232} />
         <p className="qr-price">{totalPrice}</p>
-        <p className="qr-title">Оплатить по QR-коду</p>
+        <p className="qr-title">{nbspText('Оплатить по QR-коду')}</p>
         <p className="qr-text">
-          Наведите камеру телефона
+          {nbspText('Наведите камеру телефона')}
           <br />
-          или откройте приложение банка.
+          {nbspText('или откройте приложение банка.')}
           <br />
           <br />
-          Так же можно оплатить{' '}
+          {nbspText('Так же можно оплатить ')}
           <a href={PAYMENT_LINK} target="_blank" rel="noreferrer">
-            по ссылке
+            {nbspText('по ссылке')}
           </a>
         </p>
       </div>
@@ -316,7 +317,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
     <div className="sheet-pay">
       <p className="qr-price">{totalPrice}</p>
       <a href={PAYMENT_LINK} target="_blank" rel="noreferrer">
-        Ссылка на оплату
+        {nbspText('Ссылка на оплату')}
       </a>
     </div>
   );
@@ -327,12 +328,12 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
       <p className="error-toast-copy">
         {mobile ? (
           <>
-            Попробуйте оформить
+            {nbspText('Попробуйте оформить')}
             <br />
             заказ позднее
           </>
         ) : (
-          'Попробуйте оформить заказ позднее'
+          nbspText('Попробуйте оформить заказ позднее')
         )}
       </p>
     </div>
@@ -357,21 +358,21 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
       <p className="success-copy">
         {mobile ? (
           <>
-            Не забывайте выходить из сбора после перевода денег, иначе другие коллеги
+            {nbspText('Не забывайте выходить из сбора после перевода денег, иначе другие коллеги')}
             <br />
             не смогут присоединиться.
             <br />
             <br />
-            Мерч вы получите до конца 2026 года.
+            {nbspText('Мерч вы получите до конца 2026 года.')}
           </>
         ) : (
           <>
-            Не забывайте выходить из сбора после перевода денег,{' '}
+            {nbspText('Не забывайте выходить из сбора после перевода денег, ')}
             <br />
             иначе другие коллеги не смогут присоединиться.
             <br />
             <br />
-            Мерч вы получите до конца 2026 года.
+            {nbspText('Мерч вы получите до конца 2026 года.')}
           </>
         )}
       </p>
@@ -388,7 +389,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
               successView
             ) : (
               <div className="modal-form">
-                <h2 className="modal-title">Оформление предзаказа</h2>
+                <h2 className="modal-title">{nbspText('Оформление предзаказа')}</h2>
                 {fields}
                 {mobilePay}
                 {upload}
@@ -413,7 +414,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
             <div className="modal-body">
               {qr}
               <div className="modal-form">
-                <h2 className="modal-title">Оформление предзаказа</h2>
+                <h2 className="modal-title">{nbspText('Оформление предзаказа')}</h2>
                 {fields}
                 {upload}
                 {submitBtn}

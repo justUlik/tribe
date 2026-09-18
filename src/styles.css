@@ -550,7 +550,7 @@ a {
 .info {
   display: flex;
   flex-direction: column;
-  gap: 46px;
+  gap: 32px;
   width: 100%;
   text-align: center;
 }
@@ -1452,7 +1452,7 @@ a {
   }
 
   .info {
-    gap: 12px;
+    gap: 32px;
   }
 
   .info-steps {
@@ -1543,7 +1543,7 @@ a {
   }
 
   .info {
-    gap: 12px;
+    gap: 32px;
   }
 
   .form-row,
