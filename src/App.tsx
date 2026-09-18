@@ -52,7 +52,7 @@ export default function App() {
   };
 
   return (
-    <div className={`page${lightbox ? ' is-blurred' : ''}`}>
+    <div className={`page${lightbox || order ? ' is-blurred' : ''}`}>
       <div className="page-bg" aria-hidden="true">
         <img src="/assets/decor/bg-pattern.svg" alt="" />
       </div>

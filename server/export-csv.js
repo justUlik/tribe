@@ -51,13 +51,24 @@ const safeFile = (value) =>
     .slice(0, 40) || 'file';
 
 const db = new Database(dbPath, { readonly: true });
-const rows = db.prepare(`
-  SELECT
-    id, created_at, full_name, email, phone, product, color, quantity,
-    address, print_side, team, payment_file
-  FROM orders
-  ORDER BY id
-`).all();
+let rows;
+try {
+  rows = db.prepare(`
+    SELECT
+      id, created_at, full_name, email, phone, product, color, quantity,
+      address, print_side, team, payment_file, payment_method
+    FROM orders
+    ORDER BY id
+  `).all();
+} catch {
+  rows = db.prepare(`
+    SELECT
+      id, created_at, full_name, email, phone, product, color, quantity,
+      address, print_side, team, payment_file
+    FROM orders
+    ORDER BY id
+  `).all().map((row) => ({ ...row, payment_method: 'file' }));
+}
 db.close();
 
 fs.mkdirSync(filesDir, { recursive: true });
@@ -75,6 +86,7 @@ const header = [
   'print_side',
   'team',
   'payment_file',
+  'payment_method',
 ];
 
 const exported = rows.map((row) => {
@@ -106,13 +118,16 @@ const csv = `\uFEFF${header.join(',')}\n${exported.map((row) =>
     row.side,
     row.team || '',
     row.relative || row.payment_file || '',
+    row.payment_method === 'email' ? 'email' : 'file',
   ].map(csvCell).join(','),
 ).join('\n')}\n`;
 
 const cards = exported.map((row) => {
   const when = row.created_at ? new Date(row.created_at).toLocaleString('ru-RU') : '';
   let media = '<p class="missing">Файл оплаты не найден</p>';
-  if (row.relative) {
+  if (row.payment_method === 'email') {
+    media = '<p>Чек отправит на почту Cab-sp-m0000285@sberbank.ru</p>';
+  } else if (row.relative) {
     media = ['.png', '.jpg', '.jpeg', '.webp', '.gif'].includes(row.ext)
       ? `<a href="${escapeHtml(row.relative)}" target="_blank" rel="noreferrer"><img src="${escapeHtml(row.relative)}" alt="Чек заказа ${row.id}"></a>`
       : `<a href="${escapeHtml(row.relative)}" target="_blank" rel="noreferrer">Открыть файл оплаты</a>`;

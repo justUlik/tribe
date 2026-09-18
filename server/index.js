@@ -54,20 +54,26 @@ try {
   // column already exists
 }
 
+try {
+  db.exec("ALTER TABLE orders ADD COLUMN payment_method TEXT NOT NULL DEFAULT 'file'");
+} catch {
+  // column already exists
+}
+
 const insertOrder = db.prepare(`
   INSERT INTO orders (
     created_at, full_name, email, phone, product, color, quantity,
-    address, print_side, team, payment_file, ip
+    address, print_side, team, payment_file, payment_method, ip
   ) VALUES (
     @created_at, @full_name, @email, @phone, @product, @color, @quantity,
-    @address, @print_side, @team, @payment_file, @ip
+    @address, @print_side, @team, @payment_file, @payment_method, @ip
   )
 `);
 
 const selectOrders = db.prepare(`
   SELECT
     id, created_at, full_name, email, phone, product, color, quantity,
-    address, print_side, team, payment_file
+    address, print_side, team, payment_file, payment_method
   FROM orders
   ORDER BY id
 `);
@@ -219,6 +225,7 @@ app.get('/api/orders.csv', (req, res) => {
     'print_side',
     'team',
     'payment_file',
+    'payment_method',
   ];
   const rows = selectOrders.all().map((row) =>
     [
@@ -234,6 +241,7 @@ app.get('/api/orders.csv', (req, res) => {
       SIDE_LABELS[row.print_side] || row.print_side || '',
       row.team || '',
       row.payment_file,
+      row.payment_method || 'file',
     ].map(csvCell).join(','),
   );
 
@@ -254,7 +262,8 @@ app.post('/api/orders', orderLimiter, (req, res, next) => {
   });
 }, (req, res) => {
   const file = req.file;
-  if (!file) {
+  const paymentMethod = String(req.body.paymentMethod || 'file') === 'email' ? 'email' : 'file';
+  if (!file && paymentMethod !== 'email') {
     res.status(400).json({ error: 'Загрузите скрин об оплате' });
     return;
   }
@@ -289,7 +298,7 @@ app.post('/api/orders', orderLimiter, (req, res, next) => {
   if (!address) errors.push('Выберите адрес доставки');
 
   if (errors.length) {
-    fs.unlink(file.path, () => {});
+    if (file) fs.unlink(file.path, () => {});
     res.status(400).json({ error: errors[0], errors });
     return;
   }
@@ -306,7 +315,8 @@ app.post('/api/orders', orderLimiter, (req, res, next) => {
       address,
       print_side: product === 'team' ? printSide : null,
       team: product === 'team' ? team : null,
-      payment_file: path.basename(file.path),
+      payment_file: file ? path.basename(file.path) : '',
+      payment_method: paymentMethod,
       ip: req.ip || null,
     };
     let info;
@@ -320,7 +330,7 @@ app.post('/api/orders', orderLimiter, (req, res, next) => {
     }
     res.status(201).json({ ok: true, id: info.lastInsertRowid });
   } catch (error) {
-    fs.unlink(file.path, () => {});
+    if (file) fs.unlink(file.path, () => {});
     console.error(error);
     res.status(500).json({ error: 'Не удалось сохранить заказ, попробуйте ещё раз' });
   }

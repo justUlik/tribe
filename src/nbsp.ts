@@ -3,6 +3,7 @@ const HANG = [
   'кроме',
   'между',
   'перед',
+  'после',
   'около',
   'через',
   'либо',
@@ -47,5 +48,8 @@ const HANG = [
 
 export function nbspText(text: string) {
   const hang = new RegExp(`(^|[^\\p{L}\\p{N}])(${HANG.join('|')}) `, 'giu');
-  return text.replace(hang, '$1$2\u00A0').replace(/(\d) (\p{L})/gu, '$1\u00A0$2');
+  return text
+    .replace(hang, '$1$2\u00A0')
+    .replace(/ после/gi, '\u00A0после')
+    .replace(/(\d) (\p{L})/gu, '$1\u00A0$2');
 }

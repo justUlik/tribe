@@ -92,6 +92,7 @@ img {
 .side-check img,
 .lightbox-nav img,
 .lightbox-close img,
+.lightbox-image-wrap img,
 .modal-close img,
 .field-icon,
 .qr-group img,
@@ -111,7 +112,7 @@ a {
   background: var(--bg);
 }
 
-.page.is-blurred .page-content {
+.page.is-blurred > :not(.overlay):not(.sheet):not(.lightbox) {
   filter: blur(12px);
   pointer-events: none;
   user-select: none;
@@ -169,7 +170,7 @@ a {
 .main {
   display: flex;
   flex-direction: column;
-  gap: 96px;
+  gap: 48px;
   padding: 64px clamp(24px, 4.2vw, 80px) 32px;
 }
 
@@ -238,7 +239,7 @@ a {
 .product-card.is-team {
   width: min(670px, 100%);
   max-width: 670px;
-  flex: 0 1 670px;
+  flex: 0 0 auto;
   align-items: center;
 }
 
@@ -392,7 +393,9 @@ a {
   opacity: 0.7;
 }
 
-.product-card .btn-card {
+.product-card .btn-card,
+.modal-form .btn-card,
+.sheet .btn-card {
   width: 100%;
 }
 
@@ -433,8 +436,9 @@ a {
   flex-direction: column;
   align-items: center;
   gap: 40px;
-  padding: 40px 0;
+  padding: 0;
   width: 100%;
+  margin-top: 24px;
 }
 
 .crest-intro {
@@ -569,9 +573,17 @@ a {
 .info {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   gap: 32px;
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
   text-align: center;
+  margin-top: 72px;
+}
+
+.info .section-title {
+  white-space: nowrap;
 }
 
 .info-steps {
@@ -581,7 +593,8 @@ a {
   margin: 0;
   padding: 0;
   list-style: none;
-  width: 100%;
+  width: 0;
+  min-width: 100%;
 }
 
 .info-step {
@@ -604,6 +617,7 @@ a {
   font-family: var(--font-sans);
   font-size: 28px;
   line-height: normal;
+  width: 100%;
 }
 
 .info-copy a,
@@ -617,6 +631,8 @@ a {
   font-family: var(--font-sans);
   font-size: 28px;
   line-height: normal;
+  width: 0;
+  min-width: 100%;
 }
 
 .lightbox {
@@ -632,13 +648,22 @@ a {
 }
 
 .lightbox-image-wrap {
-  max-width: min(1380px, calc(100vw - 160px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(1380px, calc(100vw - 160px));
+  height: calc(100vh - 80px);
+  max-width: calc(100vw - 160px);
   max-height: calc(100vh - 80px);
+  min-width: 0;
+  min-height: 0;
 }
 
 .lightbox-image-wrap img {
-  max-width: 100%;
-  max-height: calc(100vh - 80px);
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
   object-fit: contain;
   border-radius: 10px;
 }
@@ -687,6 +712,8 @@ a {
   inset: 0;
   z-index: 40;
   background: rgba(43, 45, 51, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -817,6 +844,7 @@ a {
 .form-row {
   display: flex;
   gap: 16px;
+  align-items: flex-start;
 }
 
 .form-row > .field {
@@ -834,6 +862,14 @@ a {
 }
 
 .field {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.field-shell {
   position: relative;
   width: 100%;
 }
@@ -870,6 +906,14 @@ a {
 
 .field.has-error .field-box {
   border-color: var(--red);
+}
+
+.field-hint {
+  margin: 4px 0 0;
+  padding: 0 17px;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--red);
 }
 
 .field-box input {
@@ -988,6 +1032,96 @@ a {
   width: 100%;
 }
 
+.pay-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  width: 100%;
+}
+
+.pay-confirm-title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: normal;
+  color: #161616;
+}
+
+.pay-options {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.pay-option {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  cursor: pointer;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+
+.pay-radio {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 44px;
+  border: 1px solid #000;
+  background: #f7f7f7;
+  box-sizing: border-box;
+}
+
+.pay-option.is-on .pay-radio::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border-radius: 44px;
+  background: #000;
+}
+
+.pay-option-body {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.pay-option-label {
+  margin: 0;
+  font-size: 16px;
+  line-height: normal;
+  color: #000;
+}
+
+.pay-option-mail {
+  color: var(--red);
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+.pay-option.has-error .pay-radio {
+  box-shadow: 0 0 0 1px var(--red);
+}
+
+.pay-confirm.has-error .pay-confirm-title {
+  color: var(--red);
+}
+
 .upload-label {
   margin: 0;
   font-size: 16px;
@@ -1079,10 +1213,14 @@ a {
   inset: 0;
   z-index: 40;
   background: rgba(43, 45, 51, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: flex;
   align-items: stretch;
   justify-content: flex-end;
   flex-direction: column;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
   animation: fade-in 0.2s ease;
 }
 
@@ -1090,14 +1228,22 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
   width: 100%;
+  max-height: 100%;
+  min-height: 0;
+  margin-top: auto;
+  overflow: hidden;
 }
 
 .sheet-panel {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-height: 92vh;
-  overflow: auto;
+  max-height: min(92dvh, 100%);
+  min-height: 0;
+  overflow: hidden;
   background: #fff;
   border-radius: 4px 4px 0 0;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.47);
@@ -1200,6 +1346,13 @@ a {
   padding: 0 0 48px;
 }
 
+.sheet-panel.is-success .success-view {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 106px 16px 24px;
+}
+
 .success-view {
   display: flex;
   flex-direction: column;
@@ -1237,10 +1390,6 @@ a {
   color: var(--black);
 }
 
-.sheet-panel.is-success .success-view {
-  padding: 106px 16px 24px;
-}
-
 .sheet-panel.is-success .success-copy {
   font-size: 14px;
 }
@@ -1254,6 +1403,11 @@ a {
   padding: 0;
   width: 100%;
   gap: 24px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .sheet .modal-title {
@@ -1290,14 +1444,16 @@ a {
 }
 
 .sheet .modal-close {
+  position: absolute;
   top: 16px;
   right: 16px;
+  z-index: 5;
 }
 
 @media (max-width: 1600px) {
   .main {
     padding: 48px clamp(16px, 2.5vw, 40px) 32px;
-    gap: 72px;
+    gap: 48px;
   }
 
   .product-row,
@@ -1318,7 +1474,7 @@ a {
 
   .main {
     padding: 48px 16px 32px;
-    gap: 56px;
+    gap: 48px;
   }
 
   .hero {
@@ -1466,6 +1622,17 @@ a {
 
   .info {
     gap: 32px;
+    width: 100%;
+  }
+
+  .info .section-title {
+    white-space: normal;
+  }
+
+  .info-steps,
+  .info-contact {
+    width: 100%;
+    min-width: 0;
   }
 
   .info-steps {
@@ -1571,7 +1738,10 @@ a {
   }
 
   .lightbox-image-wrap {
+    width: calc(100vw - 32px);
+    height: calc(100dvh - 96px);
     max-width: calc(100vw - 32px);
+    max-height: calc(100dvh - 96px);
   }
 
   .lightbox-nav {

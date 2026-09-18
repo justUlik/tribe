@@ -4,7 +4,7 @@ import { nbspText } from '../../nbsp';
 type Props = {
   file: File | null;
   onChange: (file: File | null) => void;
-  error?: boolean;
+  error?: string;
   failed?: boolean;
   fullWidth?: boolean;
 };
@@ -63,7 +63,7 @@ export function UploadZone({ file, onChange, error, failed, fullWidth }: Props) 
           }}
         />
       </label>
-      {error ? <p className="upload-error">{nbspText('Прикрепите скрин об оплате')}</p> : null}
+      {error ? <p className="upload-error">{error}</p> : null}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { ADDRESSES, COLORS, PRINT_SIDES, PRODUCTS, TEAMS } from '../data';
 import { nbspText } from '../nbsp';
 import type { ColorId, OrderPrefill, PrintSide, ProductId } from '../types';
 import { ButtonCard } from './ButtonCard';
+import { PaymentConfirm, type PayMethod } from './fields/PaymentConfirm';
 import { PhoneField } from './fields/PhoneField';
 import { QtyStepper } from './fields/QtyStepper';
 import { SelectField } from './fields/SelectField';
@@ -43,7 +44,8 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
   const [address, setAddress] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [fileFailed, setFileFailed] = useState(false);
-  const [errors, setErrors] = useState<Record<string, boolean>>({});
+  const [payMethod, setPayMethod] = useState<PayMethod>('upload');
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitFailed, setSubmitFailed] = useState(false);
   const [success, setSuccess] = useState(false);
   const [sending, setSending] = useState(false);
@@ -57,6 +59,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
     setQuantity(1);
     setFile(null);
     setFileFailed(false);
+    setPayMethod('upload');
     setSubmitFailed(false);
     setSuccess(false);
     setErrors({});
@@ -90,7 +93,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
 
   const takeFile = (next: File | null) => {
     setFile(next);
-    setErrors((prev) => ({ ...prev, file: false }));
+    setErrors((prev) => ({ ...prev, file: '' }));
     if (!next) {
       setFileFailed(false);
       return;
@@ -102,26 +105,37 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
     setFileFailed(!okType || next.size > MAX_FILE);
   };
 
+  const fileRequired = mobile || payMethod === 'upload';
+
   const validate = () => {
-    const next: Record<string, boolean> = {
-      fullName: !NAME_RE.test(fullName.trim()) || fullName.trim().split(/\s+/).length < 2,
-      email: !EMAIL_RE.test(email.trim()),
-      phone: !PHONE_RE.test(phone),
-      product: !productId,
-      color: !color || !product.colors.includes(color),
-      team: product.hasCrest && !team,
-      printSide: product.hasCrest && !printSide,
-      address: !address,
-      file: !file || fileFailed,
-    };
+    const name = fullName.trim();
+    const mail = email.trim();
+    const next: Record<string, string> = {};
+    if (!name) next.fullName = 'Укажите ФИО';
+    else if (!NAME_RE.test(name) || name.split(/\s+/).length < 2) next.fullName = 'Укажите ФИО полностью';
+    if (!mail) next.email = 'Укажите электронную почту';
+    else if (!EMAIL_RE.test(mail)) next.email = 'Некорректный email';
+    if (!phone) next.phone = 'Укажите номер телефона';
+    else if (!PHONE_RE.test(phone)) next.phone = 'Некорректный номер телефона';
+    if (!productId) next.product = 'Выберите мерч';
+    if (!color || !product.colors.includes(color)) next.color = 'Выберите цвет';
+    if (product.hasCrest && !team) next.team = 'Выберите команду';
+    if (product.hasCrest && !printSide) next.printSide = 'Выберите сторону печати';
+    if (!address) next.address = 'Выберите адрес доставки';
+    if (fileRequired && !file) next.file = 'Прикрепите скрин об оплате';
+    else if (fileRequired && fileFailed) next.file = 'Ошибка загрузки';
     setErrors(next);
     return !Object.values(next).some(Boolean);
+  };
+
+  const clearErr = (key: string) => {
+    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: '' }));
   };
 
   const submit = async () => {
     setSubmitFailed(false);
     const valid = validate();
-    if (!valid || !file || fileFailed || !color) return;
+    if (!valid || (fileRequired && (!file || fileFailed)) || !color) return;
     setSending(true);
     try {
       const body = new FormData();
@@ -134,7 +148,8 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
       body.set('address', address);
       if (product.hasCrest) body.set('team', team);
       if (product.hasCrest && printSide) body.set('printSide', printSide);
-      body.set('payment', file);
+      body.set('paymentMethod', fileRequired ? 'file' : 'email');
+      if (fileRequired && file) body.set('payment', file);
       const response = await fetch('/api/orders', { method: 'POST', body });
       const data = await response.json();
       if (!response.ok) {
@@ -159,6 +174,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
       options={PRODUCTS.map((item) => ({ id: item.id, label: nbspText(item.formTitle) }))}
       onChange={(id) => {
         setProductId(id);
+        clearErr('product');
         const next = PRODUCTS.find((item) => item.id === id)!;
         if (color && !next.colors.includes(color)) setColor('');
         if (!next.hasCrest) {
@@ -178,7 +194,10 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
       emptyLabel="Выберите команду"
       error={errors.team}
       options={teamOptions}
-      onChange={setTeam}
+      onChange={(value) => {
+        setTeam(value);
+        clearErr('team');
+      }}
     />
   ) : null;
 
@@ -189,13 +208,42 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
       emptyLabel={nbspText('Выберите сторону печати')}
       error={errors.printSide}
       options={PRINT_SIDES}
-      onChange={setPrintSide}
+      onChange={(value) => {
+        setPrintSide(value);
+        clearErr('printSide');
+      }}
     />
   ) : null;
 
+  const onEmail = (value: string) => {
+    setEmail(value);
+    clearErr('email');
+  };
+  const onPhone = (value: string) => {
+    setPhone(value);
+    clearErr('phone');
+  };
+  const onColor = (value: ColorId) => {
+    setColor(value);
+    clearErr('color');
+  };
+  const onAddress = (value: string) => {
+    setAddress(value);
+    clearErr('address');
+  };
+
   const fields = (
     <div className="form-grid">
-      <TextField value={fullName} placeholder="ФИО" autoComplete="name" error={errors.fullName} onChange={setFullName} />
+      <TextField
+        value={fullName}
+        placeholder="ФИО"
+        autoComplete="name"
+        error={errors.fullName}
+        onChange={(value) => {
+          setFullName(value);
+          clearErr('fullName');
+        }}
+      />
       {mobile ? (
         <>
           <TextField
@@ -204,9 +252,9 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
             type="email"
             autoComplete="email"
             error={errors.email}
-            onChange={setEmail}
+            onChange={onEmail}
           />
-          <PhoneField value={phone} error={errors.phone} onChange={setPhone} />
+          <PhoneField value={phone} error={errors.phone} onChange={onPhone} />
           {merchField}
           {teamField}
           {printSideField}
@@ -216,7 +264,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
             emptyLabel="Выберите цвет"
             error={errors.color}
             options={colorOptions}
-            onChange={setColor}
+            onChange={onColor}
           />
           <QtyStepper value={quantity} onChange={setQuantity} />
           <SelectField
@@ -225,7 +273,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
             emptyLabel={nbspText('Введите адрес доставки')}
             error={errors.address}
             options={ADDRESSES.map((item) => ({ id: item, label: nbspText(item) }))}
-            onChange={setAddress}
+            onChange={onAddress}
           />
         </>
       ) : (
@@ -237,9 +285,9 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
               type="email"
               autoComplete="email"
               error={errors.email}
-              onChange={setEmail}
+              onChange={onEmail}
             />
-            <PhoneField value={phone} error={errors.phone} onChange={setPhone} />
+            <PhoneField value={phone} error={errors.phone} onChange={onPhone} />
           </div>
           {product.hasCrest ? (
             <>
@@ -259,7 +307,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
               emptyLabel="Выберите цвет"
               error={errors.color}
               options={colorOptions}
-              onChange={setColor}
+              onChange={onColor}
             />
             <QtyStepper value={quantity} onChange={setQuantity} />
           </div>
@@ -269,20 +317,32 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
             emptyLabel={nbspText('Введите адрес доставки')}
             error={errors.address}
             options={ADDRESSES.map((item) => ({ id: item, label: nbspText(item) }))}
-            onChange={setAddress}
+            onChange={onAddress}
           />
         </>
       )}
     </div>
   );
 
-  const upload = (
+  const upload = mobile ? (
     <UploadZone
       file={file}
       error={errors.file}
       failed={fileFailed}
-      fullWidth={mobile}
+      fullWidth
       onChange={takeFile}
+    />
+  ) : (
+    <PaymentConfirm
+      method={payMethod}
+      onMethodChange={(method) => {
+        setPayMethod(method);
+        if (method === 'email') clearErr('file');
+      }}
+      file={file}
+      onFileChange={takeFile}
+      error={errors.file}
+      failed={fileFailed}
     />
   );
   const submitBtn = (
@@ -305,7 +365,7 @@ export function OrderModal({ open, mobile, prefill, onClose }: Props) {
           {nbspText('или откройте приложение банка.')}
           <br />
           <br />
-          {nbspText('Так же можно оплатить ')}
+          {nbspText('Также можно оплатить ')}
           <a href={PAYMENT_LINK} target="_blank" rel="noreferrer">
             {nbspText('по ссылке')}
           </a>

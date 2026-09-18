@@ -11,7 +11,7 @@ function formatPhone(raw: string) {
 type Props = {
   value: string;
   onChange: (value: string) => void;
-  error?: boolean;
+  error?: string;
 };
 
 export function PhoneField({ value, onChange, error }: Props) {
@@ -32,6 +32,7 @@ export function PhoneField({ value, onChange, error }: Props) {
           </button>
         ) : null}
       </span>
+      {error ? <span className="field-hint">{error}</span> : null}
     </label>
   );
 }

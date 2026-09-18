@@ -2,7 +2,7 @@ type Props = {
   value: string;
   placeholder: string;
   onChange: (value: string) => void;
-  error?: boolean;
+  error?: string;
   type?: 'text' | 'email';
   autoComplete?: string;
 };
@@ -24,6 +24,7 @@ export function TextField({ value, placeholder, onChange, error, type = 'text', 
           </button>
         ) : null}
       </span>
+      {error ? <span className="field-hint">{error}</span> : null}
     </label>
   );
 }

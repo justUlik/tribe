@@ -12,7 +12,7 @@ type Props<T extends string> = {
   placeholder: string;
   emptyLabel: string;
   onChange: (value: T) => void;
-  error?: boolean;
+  error?: string;
 };
 
 export function SelectField<T extends string>({
@@ -45,37 +45,40 @@ export function SelectField<T extends string>({
   }, [open]);
 
   return (
-    <div className={`field${open ? ' is-open' : ''}${error ? ' has-error' : ''}`} ref={rootRef}>
-      <button type="button" className="field-box" onClick={() => setOpen((v) => !v)}>
-        <span className={`field-value${selected ? ' is-filled' : ''}`}>
-          {open && !selected ? emptyLabel : selected?.label || placeholder}
-        </span>
-        <img
-          className="field-icon"
-          src={open ? '/assets/ui/chevron.svg' : '/assets/ui/chevron-default.svg'}
-          alt=""
-          width={16}
-          height={16}
-        />
-      </button>
-      {open ? (
-        <div className="dropdown" role="listbox" style={{ maxHeight: menuMax }}>
-          {options.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`dropdown-item${item.id === value ? ' is-active' : ''}`}
-              onClick={() => {
-                onChange(item.id);
-                setOpen(false);
-              }}
-            >
-              {item.swatch ? <span className="color-dot" style={{ background: item.swatch }} /> : null}
-              {item.label}
-            </button>
-          ))}
-        </div>
-      ) : null}
+    <div className={`field${open ? ' is-open' : ''}${error ? ' has-error' : ''}`}>
+      <div className="field-shell" ref={rootRef}>
+        <button type="button" className="field-box" onClick={() => setOpen((v) => !v)}>
+          <span className={`field-value${selected ? ' is-filled' : ''}`}>
+            {open && !selected ? emptyLabel : selected?.label || placeholder}
+          </span>
+          <img
+            className="field-icon"
+            src={open ? '/assets/ui/chevron.svg' : '/assets/ui/chevron-default.svg'}
+            alt=""
+            width={16}
+            height={16}
+          />
+        </button>
+        {open ? (
+          <div className="dropdown" role="listbox" style={{ maxHeight: menuMax }}>
+            {options.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`dropdown-item${item.id === value ? ' is-active' : ''}`}
+                onClick={() => {
+                  onChange(item.id);
+                  setOpen(false);
+                }}
+              >
+                {item.swatch ? <span className="color-dot" style={{ background: item.swatch }} /> : null}
+                {item.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      {error ? <span className="field-hint">{error}</span> : null}
     </div>
   );
 }
